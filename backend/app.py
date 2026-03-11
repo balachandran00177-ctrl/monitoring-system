@@ -23,9 +23,10 @@ anomaly_detector = AnomalyDetector()
 
 # Database connection
 def get_db():
-    db = sqlite3.connect('../database/energy.db')
-    db.row_factory = sqlite3.Row
-    return db
+    import sqlite3, os
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(BASE_DIR, "energy.db")
+    return sqlite3.connect(db_path)
 
 # Initialize database
 def init_db():
@@ -473,4 +474,7 @@ def export_data(user_id):
 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    
+import os
+port = int(os.environ.get("PORT", 5000))
+app.run(host="0.0.0.0", port=port)
