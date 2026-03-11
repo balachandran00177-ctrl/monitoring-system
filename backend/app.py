@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
+from flask_mail import Mail, Message
 from datetime import datetime, timedelta
 import sqlite3
 import json
@@ -15,6 +16,12 @@ app = Flask(
     static_folder='../frontend',
     static_url_path=''
 )
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'yourgmail@gmail.com'
+app.config['MAIL_PASSWORD'] = 'your_gmail_app_password'
+mail = Mail(app)
 CORS(app)
 
 # Initialize AI models
@@ -137,11 +144,19 @@ def send_otp():
 
     otp_storage[email] = otp
 
-    print("OTP for", email, ":", otp)
+    msg = Message(
+        "Energy Monitoring OTP",
+        sender="yourgmail@gmail.com",
+        recipients=[email]
+    )
+
+    msg.body = f"Your OTP is: {otp}"
+
+    mail.send(msg)
 
     return jsonify({
         "success": True,
-        "message": "OTP sent. Check server terminal"
+        "message": "OTP sent to your email"
     })
 
 # User Login
