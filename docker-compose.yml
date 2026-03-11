@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./database:/app/database
+      - ./backend:/app/backend
+      - ./frontend:/app/frontend
+    environment:
+      - FLASK_ENV=development
+      - DEBUG=True
+    restart: unless-stopped
+    networks:
+      - energy-network
+
+networks:
+  energy-network:
+    driver: bridge

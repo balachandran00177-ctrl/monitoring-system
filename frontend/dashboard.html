@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h2>⚡ Energy Monitor</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" onclick="showSection('overview')">
+                    <span>📊</span> Overview
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('consumption')">
+                    <span>⚡</span> Consumption
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('predictions')">
+                    <span>🔮</span> AI Predictions
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('alerts')">
+                    <span>🔔</span> Alerts
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('recommendations')">
+                    <span>💡</span> Recommendations
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('settings')">
+                    <span>⚙️</span> Settings
+                </a>
+            </nav>
+            <div class="user-info">
+                <p id="userName">User</p>
+                <button onclick="logout()" class="btn-logout">Logout</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Energy Dashboard</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="refreshData()">🔄 Refresh</button>
+                    <button class="btn btn-primary" onclick="showAddConsumption()">+ Add Reading</button>
+                </div>
+            </div>
+
+            <!-- Overview Section -->
+            <div id="overviewSection" class="section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">⚡</div>
+                        <div class="stat-info">
+                            <p class="stat-label">Today's Consumption</p>
+                            <h3 class="stat-value" id="todayConsumption">0 kWh</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-info">
+                            <p class="stat-label">Today's Cost</p>
+                            <h3 class="stat-value" id="todayCost">₹0.00</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-info">
+                            <p class="stat-label">This Month</p>
+                            <h3 class="stat-value" id="monthConsumption">0 kWh</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-info">
+                            <p class="stat-label">Average Daily</p>
+                            <h3 class="stat-value" id="avgConsumption">0 kWh</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>Weekly Consumption Trend</h3>
+                        <canvas id="weeklyChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Cost Analysis</h3>
+                        <canvas id="costChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="health-score-card">
+                    <h3>Consumption Health Score</h3>
+                    <div class="health-score" id="healthScore">
+                        <div class="score-circle">
+                            <span id="scoreValue">0</span>
+                        </div>
+                        <div class="score-info">
+                            <p id="scoreStatus">Loading...</p>
+                            <p id="scoreMessage"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Consumption Section -->
+            <div id="consumptionSection" class="section">
+                <div class="filter-bar">
+                    <select id="periodFilter" onchange="loadConsumptionData()">
+                        <option value="week">Last 7 Days</option>
+                        <option value="month">Last 30 Days</option>
+                        <option value="year">Last Year</option>
+                    </select>
+                    <button class="btn btn-secondary" onclick="exportData()">📥 Export Data</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Consumption (kWh)</th>
+                                <th>Cost (₹)</th>
+                                <th>Device</th>
+                                <th>Location</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="consumptionTableBody">
+                            <tr>
+                                <td colspan="6" class="text-center">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- AI Predictions Section -->
+            <div id="predictionsSection" class="section">
+                <div class="prediction-header">
+                    <h2>AI-Powered Consumption Predictions</h2>
+                    <select id="predictionDays" onchange="loadPredictions()">
+                        <option value="7">Next 7 Days</option>
+                        <option value="14">Next 14 Days</option>
+                        <option value="30">Next 30 Days</option>
+                    </select>
+                </div>
+
+                <div class="chart-card">
+                    <canvas id="predictionChart"></canvas>
+                </div>
+
+                <div class="prediction-table">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Predicted Consumption</th>
+                                <th>Range</th>
+                                <th>Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody id="predictionTableBody">
+                            <tr>
+                                <td colspan="4" class="text-center">Click "Generate Predictions" to view AI predictions</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button class="btn btn-primary" onclick="loadPredictions()">🔮 Generate Predictions</button>
+            </div>
+
+            <!-- Alerts Section -->
+            <div id="alertsSection" class="section">
+                <h2>Alerts & Notifications</h2>
+                <div id="alertsList" class="alerts-list">
+                    <p class="text-center">Loading alerts...</p>
+                </div>
+            </div>
+
+            <!-- Recommendations Section -->
+            <div id="recommendationsSection" class="section">
+                <h2>AI-Powered Recommendations</h2>
+                <div id="recommendationsList" class="recommendations-list">
+                    <p class="text-center">Loading recommendations...</p>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settingsSection" class="section">
+                <h2>Settings</h2>
+                <div class="settings-container">
+                    <div class="setting-group">
+                        <h3>Electricity Rate</h3>
+                        <div class="form-group">
+                            <label for="electricityRate">Rate per kWh (₹)</label>
+                            <input type="number" id="electricityRate" value="8" step="0.1">
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <h3>Alert Threshold</h3>
+                        <div class="form-group">
+                            <label for="alertThreshold">Daily Consumption Limit (kWh)</label>
+                            <input type="number" id="alertThreshold" value="15" step="1">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Consumption Modal -->
+    <div id="addConsumptionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddConsumption()">&times;</span>
+            <h2>Add Energy Reading</h2>
+            <form id="addConsumptionForm">
+                <div class="form-group">
+                    <label for="consumption">Consumption (kWh)</label>
+                    <input type="number" id="consumption" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="cost">Cost (₹)</label>
+                    <input type="number" id="cost" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="device">Device Name</label>
+                    <input type="text" id="device" value="Main Meter">
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" value="Home">
+                </div>
+                <button type="submit" class="btn btn-primary">Add Reading</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
